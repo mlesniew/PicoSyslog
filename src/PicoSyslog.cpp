@@ -51,10 +51,14 @@ Stream::~Stream() {
     if (udp && packet_in_progress) { udp->endPacket(); }
 }
 
+AbstractLogger::AbstractLogger(const String & app, const String & host,
+                               Print * forward_to, const String & server, uint16_t port):
+    app(app), host(host), forward_to(forward_to), server(server), port(port) {}
+
 Logger::Logger(const String & app, const String & host, const LogLevel default_loglevel,
                Print * forward_to, const String & server, uint16_t port):
-    app(app), host(host), default_loglevel(default_loglevel),
-    forward_to(forward_to), server(server), port(port),
+    AbstractLogger(app, host, forward_to, server, port),
+    default_loglevel(default_loglevel),
     emergency(*this, LogLevel::emergency),
     alert(*this, LogLevel::alert),
     critical(*this, LogLevel::critical),
@@ -80,6 +84,15 @@ Print & Logger::get_stream(const LogLevel level) {
         case LogLevel::debug: return debug;
         default: return information;
     }
+}
+
+SimpleLogger::SimpleLogger(const String & app, const String & host, const LogLevel loglevel,
+                           Print * forward_to, const String & server, uint16_t port):
+    AbstractLogger(app, host, forward_to, server, port),
+    stream(*this, loglevel) {}
+
+size_t SimpleLogger::write(const uint8_t * buffer, size_t size) {
+    return stream.write(buffer, size);
 }
 
 }

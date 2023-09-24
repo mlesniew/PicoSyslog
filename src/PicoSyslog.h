@@ -23,14 +23,14 @@ class SyslogPrint: public Print {
         size_t write(uint8_t c) override { return write(&c, 1); }
 };
 
-class Logger;
+class AbstractLogger;
 
 class Stream: public SyslogPrint {
     public:
-        Stream(const Logger & logger, const LogLevel & level)
+        Stream(const AbstractLogger & logger, const LogLevel & level)
             : logger(logger), level(level), packet_in_progress(false) {}
 
-        const Logger & logger;
+        const AbstractLogger & logger;
         const LogLevel level;
 
         Stream(const Stream &) = delete;
@@ -44,24 +44,30 @@ class Stream: public SyslogPrint {
         bool packet_in_progress;
 };
 
-class Logger: public SyslogPrint {
+class AbstractLogger: public SyslogPrint {
+    public:
+        AbstractLogger(const String & app, const String & host, Print * forward_to,
+                       const String & server, uint16_t port);
+
+        String app;
+        String host;
+        Print * forward_to;
+        String server;
+        uint16_t port;
+};
+
+class Logger: public AbstractLogger {
     public:
         Logger(const String & app = "PicoSyslog",
-               const String & host = String(ESP.getChipId(), HEX),
+               const String & host = "-",
                const LogLevel default_loglevel = LogLevel::information,
                Print * forward_to = &Serial,
                const String & server = "", uint16_t port = 514);
 
         size_t write(const uint8_t * buffer, size_t size) override;
-
         Print & get_stream(const LogLevel log_level);
 
-        String app;
-        String host;
         LogLevel default_loglevel;
-        Print * forward_to;
-        String server;
-        uint16_t port;
 
         Stream emergency;
         Stream alert;
@@ -71,6 +77,20 @@ class Logger: public SyslogPrint {
         Stream notification;
         Stream information;
         Stream debug;
+};
+
+class SimpleLogger: public AbstractLogger {
+    public:
+        SimpleLogger(const String & app = "PicoSyslog",
+                     const String & host = "-",
+                     const LogLevel loglevel = LogLevel::information,
+                     Print * forward_to = &Serial,
+                     const String & server = "", uint16_t port = 514);
+
+        size_t write(const uint8_t * buffer, size_t size) override;
+
+    protected:
+        Stream stream;
 };
 
 }
