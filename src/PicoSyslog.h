@@ -23,18 +23,38 @@ class SyslogPrint: public Print {
         size_t write(uint8_t c) override { return write(&c, 1); }
 };
 
+class Logger;
+
+class Stream: public SyslogPrint {
+    public:
+        Stream(const Logger & logger, const LogLevel & level)
+            : logger(logger), level(level), packet_in_progress(false) {}
+
+        const Logger & logger;
+        const LogLevel level;
+
+        Stream(const Stream &) = delete;
+        Stream & operator=(const Stream &) = delete;
+
+        size_t write(const uint8_t * buffer, size_t size) override;
+        virtual ~Stream();
+
+    protected:
+        std::unique_ptr<WiFiUDP> udp;
+        bool packet_in_progress;
+};
+
 class Logger: public SyslogPrint {
     public:
         Logger(const String & app = "PicoSyslog",
                const String & host = String(ESP.getChipId(), HEX),
                const LogLevel default_loglevel = LogLevel::information,
                Print * forward_to = &Serial,
-               const String & server = "", uint16_t port = 514):
-            app(app), host(host), default_loglevel(default_loglevel), forward_to(forward_to), server(server), port(port) {}
+               const String & server = "", uint16_t port = 514);
 
-        size_t write(const uint8_t * buffer, size_t size) override { return get_stream(default_loglevel).write(buffer, size); }
+        size_t write(const uint8_t * buffer, size_t size) override;
 
-        Print & get_stream(const LogLevel log_level) const;
+        Print & get_stream(const LogLevel log_level);
 
         String app;
         String host;
@@ -43,8 +63,14 @@ class Logger: public SyslogPrint {
         String server;
         uint16_t port;
 
-    protected:
-        mutable std::unique_ptr<Print> streams[8];
+        Stream emergency;
+        Stream alert;
+        Stream critical;
+        Stream error;
+        Stream warning;
+        Stream notification;
+        Stream information;
+        Stream debug;
 };
 
 }
