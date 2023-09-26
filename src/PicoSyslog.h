@@ -2,7 +2,9 @@
 
 #include <memory>
 #include <map>
+
 #include <Arduino.h>
+#include <WiFiUdp.h>
 
 namespace PicoSyslog {
 

@@ -1,5 +1,3 @@
-#include <WiFiUdp.h>
-
 #include "PicoSyslog.h"
 
 namespace PicoSyslog {
