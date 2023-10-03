@@ -1,5 +1,22 @@
 #include "PicoSyslog.h"
 
+namespace {
+
+const uint8_t * find_new_line(const void * buffer, size_t size) {
+    const char * ret = (const char *) buffer;
+    while (size--) {
+        const char c = *ret;
+        if (c == '\n' || c == '\r') {
+            // separator found!
+            return (const uint8_t *) ret;
+        }
+        ++ret;
+    }
+    return nullptr;
+}
+
+}
+
 namespace PicoSyslog {
 
 size_t Stream::write(const uint8_t * buffer, size_t size) {
@@ -11,25 +28,27 @@ size_t Stream::write(const uint8_t * buffer, size_t size) {
         return size;
     }
 
-    if (!udp) {
-        udp.reset(new WiFiUDP());
-    }
-
     size_t written = 0;
     while (written < size) {
         const size_t left = size - written;
-        const uint8_t * pos = (const uint8_t *) memchr(buffer, '\n', left);
+        const uint8_t * pos = find_new_line(buffer, left);
         const size_t len = pos ? pos - buffer : left;
 
-        if (!packet_in_progress) {
-            udp->beginPacket(logger.server.c_str(), logger.port);
-            const int priority = (1 << 3) | static_cast<int>(level);
-            udp->printf("<%d> %s %s: ", priority, logger.host.c_str(), logger.app.c_str());
-            packet_in_progress = true;
-        }
+        if (len) {
+            if (!udp) {
+                udp.reset(new WiFiUDP());
+            }
 
-        udp->write(buffer, len);
-        written += len;
+            if (!packet_in_progress) {
+                udp->beginPacket(logger.server.c_str(), logger.port);
+                const int priority = (1 << 3) | static_cast<int>(level);
+                udp->printf("<%d> %s %s: ", priority, logger.host.c_str(), logger.app.c_str());
+                packet_in_progress = true;
+            }
+
+            udp->write(buffer, len);
+            written += len;
+        }
 
         if (!pos) {
             // separator not found
@@ -39,9 +58,13 @@ size_t Stream::write(const uint8_t * buffer, size_t size) {
         // separator found, advance in the buffer
         buffer = pos + 1; // skip the newline char too
         size -= len + 1;
-        udp->endPacket();
-        packet_in_progress = false;
+
+        if (packet_in_progress) {
+            udp->endPacket();
+            packet_in_progress = false;
+        }
     }
+
     return written;
 }
 
