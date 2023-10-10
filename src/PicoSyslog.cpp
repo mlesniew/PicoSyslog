@@ -1,3 +1,11 @@
+#if defined(ESP8266)
+#include <ESP8266WiFi.h>
+#elif defined(ESP32)
+#include <WiFi.h>
+#else
+#error Unsupported board.
+#endif
+
 #include "PicoSyslog.h"
 
 namespace {
@@ -42,7 +50,10 @@ size_t Stream::write(const uint8_t * buffer, size_t size) {
             if (!packet_in_progress) {
                 udp->beginPacket(logger.server.c_str(), logger.port);
                 const int priority = (1 << 3) | static_cast<int>(level);
-                udp->printf("<%d>1 - %s %s - - - ", priority, logger.host.c_str(), logger.app.c_str());
+                udp->printf("<%d>1 - %s %s - - - ",
+                            priority,
+                            logger.host.length() ? logger.host.c_str() : WiFi.localIP().toString().c_str(),
+                            logger.app.c_str());
                 packet_in_progress = true;
             }
 

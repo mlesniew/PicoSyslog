@@ -61,7 +61,7 @@ class AbstractLogger: public SyslogPrint {
 class Logger: public AbstractLogger {
     public:
         Logger(const String & app = "PicoSyslog",
-               const String & host = "-",
+               const String & host = "",
                const LogLevel default_loglevel = LogLevel::information,
                Print * forward_to = &Serial,
                const String & server = "", uint16_t port = 514);
@@ -84,7 +84,7 @@ class Logger: public AbstractLogger {
 class SimpleLogger: public AbstractLogger {
     public:
         SimpleLogger(const String & app = "PicoSyslog",
-                     const String & host = "-",
+                     const String & host = "",
                      const LogLevel loglevel = LogLevel::information,
                      Print * forward_to = &Serial,
                      const String & server = "", uint16_t port = 514);
