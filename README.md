@@ -4,6 +4,12 @@
 makes it easy to send logs to a [syslog](https://en.wikipedia.org/wiki/Syslog)
 server.
 
+![Build](https://github.com/mlesniew/PicoSyslog/actions/workflows/ci.yml/badge.svg) ![License](https://img.shields.io/github/license/mlesniew/PicoSyslog) 
+
+[![arduino-library-badge](https://www.ardu-badge.com/badge/PicoSyslog.svg?)](https://www.ardu-badge.com/PicoSyslog) [![PlatformIO library](https://badges.registry.platformio.org/packages/mlesniew/library/PicoSyslog.svg)](https://registry.platformio.org/libraries/mlesniew/PicoSyslog)
+
+[![ESP8266](https://img.shields.io/badge/ESP-8266-000000.svg?longCache=true&style=flat&colorA=CC101F)](https://www.espressif.com/en/products/socs/esp8266) [![ESP32](https://img.shields.io/badge/ESP-32-000000.svg?longCache=true&style=flat&colorA=CC101F)](https://www.espressif.com/en/products/socs/esp32)
+
 
 ## Features
 
@@ -59,7 +65,8 @@ void loop() {
 
 ## Installation
 
-TODO
+* [Arduino IDE](https://www.ardu-badge.com/PicoSyslog)
+* [PlatformIO](https://registry.platformio.org/libraries/mlesniew/PicoSyslog/installation)
 
 
 ## Setting up a syslog server
