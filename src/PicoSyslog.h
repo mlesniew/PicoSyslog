@@ -1,7 +1,7 @@
 #pragma once
 
+#include <array>
 #include <memory>
-#include <map>
 
 #include <Arduino.h>
 #include <WiFiUdp.h>
@@ -71,14 +71,7 @@ class Logger: public AbstractLogger {
 
         LogLevel default_loglevel;
 
-        Stream emergency;
-        Stream alert;
-        Stream critical;
-        Stream error;
-        Stream warning;
-        Stream notification;
-        Stream information;
-        Stream debug;
+        std::array<Stream, 8> streams;
 };
 
 class SimpleLogger: public AbstractLogger {
