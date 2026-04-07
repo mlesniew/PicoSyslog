@@ -1,0 +1,32 @@
+{
+    "name": "PicoSyslog",
+    "version": "1.0.0",
+    "description": "Lightweight Arduino syslog client for ESP8266 and ESP32 with a Serial-compatible API.",
+    "keywords": [
+        "syslog",
+        "logging",
+        "udp",
+        "esp8266",
+        "esp32",
+        "arduino"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mlesniew/PicoSyslog.git"
+    },
+    "homepage": "https://github.com/mlesniew/PicoSyslog",
+    "authors": [
+        {
+            "name": "Michał Leśniewski",
+            "email": "mlesniew@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "license": "LGPL-3.0-only",
+    "frameworks": "arduino",
+    "platforms": [
+        "espressif8266",
+        "espressif32"
+    ],
+    "headers": "PicoSyslog.h"
+}
