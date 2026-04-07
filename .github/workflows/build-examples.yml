@@ -1,0 +1,41 @@
+name: Build Examples
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  discover-examples:
+    runs-on: ubuntu-latest
+    outputs:
+      examples: ${{ steps.find-examples.outputs.examples }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Install just
+        uses: taiki-e/install-action@just
+      - name: Discover examples
+        id: find-examples
+        run: |
+          examples=$(just list-examples-json)
+          echo "examples=$examples" >> $GITHUB_OUTPUT
+
+  build:
+    needs: discover-examples
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: ${{ fromJson(needs.discover-examples.outputs.examples) }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install just
+        uses: taiki-e/install-action@just
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Install PlatformIO Core
+        run: pip install -U platformio intelhex
+      - name: Build ${{ matrix.example }}
+        run: just build-example ${{ matrix.example }}

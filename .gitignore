@@ -1,3 +1,5 @@
+.vscode
 .pio
-examples.build
-config.h
+.env
+*.orig
+*.tar.gz

@@ -9,18 +9,6 @@
 #error "This board is not supported."
 #endif
 
-#if __has_include("config.h")
-#include "config.h"
-#endif
-
-#ifndef WIFI_SSID
-#define WIFI_SSID "WiFi SSID"
-#endif
-
-#ifndef WIFI_PASSWORD
-#define WIFI_PASSWORD "password"
-#endif
-
 PicoSyslog::Logger syslog;
 
 void setup() {
@@ -28,7 +16,9 @@ void setup() {
     Serial.println("Connecting to WiFi...");
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    while (WiFi.status() != WL_CONNECTED) { delay(100); }
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(100);
+    }
     Serial.print("WiFi connected, IP: ");
     Serial.println(WiFi.localIP());
 

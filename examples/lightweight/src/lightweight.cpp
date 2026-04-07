@@ -9,26 +9,16 @@
 #error "This board is not supported."
 #endif
 
-#if __has_include("config.h")
-#include "config.h"
-#endif
-
-#ifndef WIFI_SSID
-#define WIFI_SSID "WiFi SSID"
-#endif
-
-#ifndef WIFI_PASSWORD
-#define WIFI_PASSWORD "password"
-#endif
-
-PicoSyslog::Logger syslog;
+PicoSyslog::SimpleLogger syslog;
 
 void setup() {
     Serial.begin(115200);
     Serial.println("Connecting to WiFi...");
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    while (WiFi.status() != WL_CONNECTED) { delay(100); }
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(100);
+    }
     Serial.print("WiFi connected, IP: ");
     Serial.println(WiFi.localIP());
 
@@ -42,5 +32,8 @@ void loop() {
     syslog.print("PicoSyslog ");
     syslog.println("is awesome!");
     syslog.printf("I've said it %i times!\n", ++counter);
+
+    // With SimpleLogger the different loglevels will not work:
+    // syslog.emergency.println("This requires PicoSyslog::Logger.");
     delay(1000);
 }

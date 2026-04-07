@@ -9,18 +9,6 @@
 #error "This board is not supported."
 #endif
 
-#if __has_include("config.h")
-#include "config.h"
-#endif
-
-#ifndef WIFI_SSID
-#define WIFI_SSID "WiFi SSID"
-#endif
-
-#ifndef WIFI_PASSWORD
-#define WIFI_PASSWORD "password"
-#endif
-
 PicoSyslog::Logger syslog(
     // application name reported to syslog server
     "PicoSyslog",
@@ -35,15 +23,16 @@ PicoSyslog::Logger syslog(
     // Syslog server address
     "192.168.1.100",
     // Syslog server port
-    514
-    );
+    514);
 
 void setup() {
     Serial.begin(115200);
     Serial.println("Connecting to WiFi...");
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    while (WiFi.status() != WL_CONNECTED) { delay(100); }
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(100);
+    }
     Serial.print("WiFi connected, IP: ");
     Serial.println(WiFi.localIP());
 
